@@ -1,6 +1,6 @@
 import controller as c
 
-numOfRubbish = 10 #int(input("Number of rooms with rubbish?\n"))
+numOfRubbish = 3 #int(input("Number of rooms with rubbish?\n"))
 numOfDisposalRoom = 3 #int(input("Number of disposal rooms?\n"))
 initialState = [0,0]
 
