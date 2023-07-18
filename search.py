@@ -1,3 +1,6 @@
+import math
+import problem as v
+
 def ids(problem):
     depth_limit = 0
     while True:
@@ -5,5 +8,3 @@ def ids(problem):
         if result == 'found':
             return result
         depth_limit += 1
-
-#def dls(problem, depth_limit):

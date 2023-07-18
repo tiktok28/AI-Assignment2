@@ -1,10 +1,11 @@
 class Node:
-    def __init__(self, state=None, parent=None):
+    def __init__(self, state=None, parent=None, depth=0):
         self.state = state
         self.parent = parent
+        self.depth = depth
 
-class Trash:
-    def __init__(self, weight=0, volume=0, xCoor=0, yCoor=0):
+class Rubbish:
+    def __init__(self, weight=0, volume=0, pos=[]):
         if(weight==0):
             self.weight = 5
         if(weight==1):
@@ -19,14 +20,14 @@ class Trash:
             self.volume = 2
         if(volume==2):
             self.volume = 3
-        self.xCoor = xCoor
-        self.yCoor = yCoor
+        self.pos = pos
 class DisposalRoom:
-    def __init__(self, xCoor=0, yCoor=0):
-        self.xCoor = xCoor
-        self.yCoor = yCoor
+    def __init__(self, pos=[]):
+        self.pos = pos
 
 class RubbishBin:
     def __init__(self, weight=0, volume=0):
         self.weight = weight
         self.volume = volume
+
+    #def take(self, Rubbish):
