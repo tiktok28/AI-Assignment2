@@ -1,20 +1,16 @@
-import random
-import numpy as np
-import math
-import problem
-import search
+import controller as c
 
-numOfRubbish = int(input("Number of rooms with rubbish?\n"))
-numOfDisposalRoom = int(input("Number of disposal rooms?\n"))
-rubbishRooms = []
-disposalRooms = []
+numOfRubbish = 10 #int(input("Number of rooms with rubbish?\n"))
+numOfDisposalRoom = 10 #int(input("Number of disposal rooms?\n"))
+initialState = [0,0]
 
-for i in range(numOfRubbish):
-    rubbishRooms.append(problem.Trash(random.randrange(0,4),random.randrange(0,3),random.randrange(0,9),random.randrange(-4,3)))
-    print("Rubbish " + str(i+1) + " at (" + str(rubbishRooms[i].xCoor) + "," + str(rubbishRooms[i].yCoor) + "), weight=" + str(rubbishRooms[i].weight) + ", volume=" + str(rubbishRooms[i].volume))
-
-for i in range(numOfDisposalRoom):
-    disposalRooms.append(problem.DisposalRoom(random.randrange(0,9,2),random.randrange(-4,4)))
-    print("Disposal Room " + str(i+1) + " at (" + str(disposalRooms[i].xCoor) + "," + str(disposalRooms[i].yCoor) + ")")
-
-rubbishBin = problem.RubbishBin()
+controller = c.Controller(numOfRubbish, numOfDisposalRoom, initialState)
+print(controller.initialRubbishRooms)
+print(controller.initialDisposalRooms)
+print(controller.currentRubbishRooms)
+print(controller.currentDisposalRooms)
+print(controller.currentState)
+print(controller.initialState)
+# rubbishBin = p.RubbishBin()
+# print(rubbishBin.weight)
+# print(rubbishBin.volume)
