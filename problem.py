@@ -5,25 +5,21 @@ class Node:
         self.depth = depth
         self.children = []
 
-    def addChildren(self, chilren):
-        self.children.extend(chilren)
+    def addChildren(self, children):
+        self.children.extend(children)
 
 class Rubbish:
     def __init__(self, weight=0, volume=0, pos=[]):
-        if(weight==0):
-            self.weight = 5
-        if(weight==1):
-            self.weight = 10
-        if(weight==2):
-            self.weight = 20
-        if(weight==3):
-            self.weight = 30
-        if(volume==0):
-            self.volume = 1
-        if(volume==1):
-            self.volume = 2
-        if(volume==2):
-            self.volume = 3
+        # if(weight==0):
+        #     self.weight = 5
+        # if(weight==1):
+        #     self.weight = 10
+        # if(weight==2):
+        #     self.weight = 20
+        # if(weight==3):
+        #     self.weight = 30
+        self.weight = weight
+        self.volume = volume
         self.pos = pos
 class DisposalRoom:
     def __init__(self, pos=[]):
@@ -41,12 +37,18 @@ class RubbishBin:
         self.volume += rubbish.volume
 
     def clearRubbish(self):
-        self.storage.clear()
+        self.storage = []
         self.weight = 0
         self.volume = 0
 
-    def test(self):
+    def failTest(self):
         if (self.weight > 40 or self.volume > 5):
-            return False
-        else:
             return True
+        else:
+            return False
+
+    def withinLimit(self):
+        if (self.weight <= 20 and self.volume <= 2):
+            return True
+        else:
+            return False
