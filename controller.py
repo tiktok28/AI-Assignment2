@@ -152,7 +152,7 @@ class Controller:
             for rubbish in self.currentRubbishRooms:
                 if (self.frontier[0].state == rubbish.pos):
                     if (self.rubbishBin.failTest(rubbish.weight, rubbish.volume)):
-                        print("found")
+                        print("Found rubbish at " + str(rubbish.pos))
                         found_goal = True
                         self.currentRubbishRooms.remove(rubbish)
                         self.frontier[0].state.append("rubbish")
@@ -223,7 +223,7 @@ class Controller:
         currentState = p.Node(self.initialState,None,0)
         while (self.currentRubbishRooms != [] or self.rubbishBin.weight != 0):
             while (currentDepth <= 100):
-                print("trying limit: ", currentDepth)
+                print("Increasing limit to: ", currentDepth)
                 self.explored = []
                 self.frontier = [currentState]
 
@@ -231,13 +231,19 @@ class Controller:
                 if (solution != None):
                     self.frontier[0].depth = 0
                     currentState = self.frontier[0]
-                    print("Weight: ", self.rubbishBin.weight, "Volume: ", self.rubbishBin.volume)
+                    print("Weight:", self.rubbishBin.weight, "kg,", "Volume:", self.rubbishBin.volume, "cm3\n")
                     break
                 else:
                     currentDepth = currentDepth + 1
                 if(currentDepth>10):
-                    print("fail")
+                    print("Algorithm fail")
                     exit()
             currentDepth = 1
-        print("Final solution" + str(solution))
-        print("Number of steps: " + str(steps))
+        finalSolution = ""
+        for i in range(len(solution)):
+            if(i % 10 == 0):
+                finalSolution += "\n"
+            finalSolution += str(solution[i])
+        print("Final solution: " + finalSolution)
+        print("")
+        print("Total number of steps: " + str(steps))
