@@ -1,9 +1,6 @@
 import problem as p
 import math
 import random
-import problem as p
-import math
-import random
 
 class Controller:
     legalDisposalRooms = [[0, 5], [2, 6], [4, 7], [6, 8], [8, 9], [8, 8], [8, 7], [8, 6], [8, 5], [8, 4], [7, 3],[5, 2], [3, 1], [1, 0]]
@@ -158,7 +155,7 @@ class Controller:
                         print("found")
                         found_goal = True
                         self.currentRubbishRooms.remove(rubbish)
-                        self.frontier[0].state.append("take")
+                        self.frontier[0].state.append("rubbish")
                         goalie = self.frontier[0]
                         return found_goal, goalie
                     else:
@@ -174,7 +171,6 @@ class Controller:
                         found_goal = True
                         self.frontier[0].state.append("dispose")
                         goalie = self.frontier[0]
-                        # self.frontier[0] = self.frontier[0].parent
                         return found_goal, goalie
                     else:
                         self.explored.append(self.frontier[0])
@@ -184,12 +180,6 @@ class Controller:
             return found_goal, goalie
 
     def DLS(self, currentLimit):
-        # up = y+1
-        # up-right = x+1
-        # up-left = x-1, y+1
-        # down = y-1
-        # down-right = x+1, y-1
-        # down-left = x-1
 
         solution = 0
         found_goal = False
@@ -197,10 +187,7 @@ class Controller:
         steps = 0
 
         while (not found_goal):
-            # print("iterating")
-
             if (self.frontier == []):
-                # print("breaking")
                 return None, steps
 
             found_goal, goalie = self.goalTest(found_goal, goalie)
@@ -219,7 +206,6 @@ class Controller:
             for child in children:
                 if not (child.state in [e.state for e in self.explored]):
                     self.frontier.append(child)
-                    # and not (child.state in [f.state for f in self.frontier])
 
         if(solution == None and goalie == None):
             return solution, steps
@@ -233,23 +219,16 @@ class Controller:
         return solution, steps
 
     def start(self):
-        noOfIteration = 0
         currentDepth = 1
         currentState = p.Node(self.initialState,None,0)
         while (self.currentRubbishRooms != [] or self.rubbishBin.weight != 0):
-            # print("iterating")
             while (currentDepth <= 100):
                 print("trying limit: ", currentDepth)
                 self.explored = []
-                # self.frontier = [v.Node(self.currentState,None,0)]
                 self.frontier = [currentState]
-
-                # print("current depth: ", currentDepth)
 
                 solution, steps = self.DLS(currentDepth)
                 if (solution != None):
-                    # self.currentState = self.frontier[0].state
-                    # self.frontier[0].parent = None
                     self.frontier[0].depth = 0
                     currentState = self.frontier[0]
                     print("Weight: ", self.rubbishBin.weight, "Volume: ", self.rubbishBin.volume)
