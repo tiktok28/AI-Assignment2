@@ -68,27 +68,23 @@ class Controller:
         children = []
         limitShift = math.floor(node.state[0] / 2)
 
-        yUpLimit, yDownLimit = -1, 9
+        yUpLimit, yDownLimit = 0, 5
         xUpLimit, xDownLimit = 8, 0
 
         yUpLimit -= limitShift
         yDownLimit -= limitShift
-        yNewRightUpLimit = yUpLimit
-        yNewLeftUpLimit = yUpLimit
-        yNewRightDownLimit = yDownLimit
-        yNewLeftDownLimit = yDownLimit
 
         rightFlag = False
         leftFlag = False
 
         if (node.state[0] > 0 and node.state[0] < 8):
             if (node.state[0] % 2 != 0):
-                yNewRightUpLimit = yUpLimit - 1
-                yNewRightDownLimit = yDownLimit - 1
+                yNewRightUpLimit = yUpLimit + 1
+                yNewRightDownLimit = yDownLimit + 1
                 rightFlag = True
             if (node.state[0] % 2 == 0):
-                yNewLeftUpLimit = yUpLimit + 1
-                yNewLeftDownLimit = yDownLimit + 1
+                yNewLeftUpLimit = yUpLimit - 1
+                yNewLeftDownLimit = yDownLimit - 1
                 leftFlag = True
 
                 # print("Y new up limit: ",yNewUpLimit)
@@ -99,100 +95,104 @@ class Controller:
                 # down
                 if (node.state[1] < yDownLimit):
                     children.append(p.Node([node.state[0], node.state[1] + 1], node, node.depth + 1))
-                   # print("Going down to " + str(children[len(children)-1].state))
+                # print("Going down to " + str(children[len(children)-1].state))
 
                 if (rightFlag == True):
                     # down-right
-                    if (node.state[0] < xUpLimit and node.state[1] <= yNewRightDownLimit):
+                    if (node.state[0] < xUpLimit and node.state[1] + 1 <= yNewRightDownLimit):
                         children.append(p.Node([node.state[0] + 1, node.state[1] + 1], node, node.depth + 1))
-                       # print("Going down-right to " + str(children[len(children) - 1].state))
-                     # up-right
+                    # print("Going down-right to " + str(children[len(children) - 1].state))
+                    # up-right
                     if (node.state[0] < xUpLimit and node.state[1] >= yNewRightUpLimit):
                         children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
-                       # print("Going up-right to " + str(children[len(children) - 1].state))
+                    # print("Going up-right to " + str(children[len(children) - 1].state))
 
                 else:
                     # down-right
                     if (node.state[0] < xUpLimit and node.state[1] < yDownLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
-                       # print("Going down-right to " + str(children[len(children) - 1].state))
+                        children.append(p.Node([node.state[0] + 1, node.state[1] + 1], node, node.depth + 1))
+                    # print("Going down-right to " + str(children[len(children) - 1].state))
                     # up-right
-                    if (node.state[0] < xUpLimit and node.state[1] > yUpLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1] - 1], node, node.depth + 1))
-                      #  print("Going up-right to " + str(children[len(children) - 1].state))
+                    if (node.state[0] < xUpLimit):
+                        children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
+                    #  print("Going up-right to " + str(children[len(children) - 1].state))
 
                 # up
-                if (node.state[1] < yUpLimit):
+                if (node.state[1] > yUpLimit):
                     children.append(p.Node([node.state[0], node.state[1] - 1], node, node.depth + 1))
-                   # print("Going up to " + str(children[len(children) - 1].state))
+                # print("Going up to " + str(children[len(children) - 1].state))
 
                 if (leftFlag == True):
-                    # down-left
-                    if (node.state[0] > xDownLimit and node.state[1] >= yNewLeftDownLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
-                      #  print("Going down-left to " + str(children[len(children) - 1].state))
                     # up-left
-                    if (node.state[0] > xDownLimit and node.state[1] <= yNewLeftUpLimit):
+                    if (node.state[0] > xDownLimit and node.state[1] - 1 >= yNewLeftUpLimit):
                         children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
-                      #  print("Going up-left to " + str(children[len(children) - 1].state))
+                    #  print("Going up-left to " + str(children[len(children) - 1].state))
+                    # down-left
+                    if (node.state[0] > xDownLimit and node.state[1] <= yNewLeftDownLimit):
+                        children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
+                    #  print("Going down-left to " + str(children[len(children) - 1].state))
+
                 else:
+                    # up-left
+                    if (node.state[0] > xDownLimit and node.state[1] > yUpLimit):
+                        children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
                     # down-left
                     if (node.state[0] > xDownLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1] + 1], node, node.depth + 1))
-                      #  print("Going down-left to " + str(children[len(children) - 1].state))
-                    # up-left
-                    if (node.state[0] > xDownLimit and node.state[1] < yUpLimit):
                         children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
-                      #  print("Going up-left to " + str(children[len(children) - 1].state))
+                    #  print("Going down-left to " + str(children[len(children) - 1].state))
+
+                    #  print("Going up-left to " + str(children[len(children) - 1].state))
             else:
                 # up
-                if (node.state[1] < yUpLimit):
+                if (node.state[1] > yUpLimit):
                     children.append(p.Node([node.state[0], node.state[1] - 1], node, node.depth + 1))
-                   # print("Going up to " + str(children[len(children) - 1].state))
+                # print("Going up to " + str(children[len(children) - 1].state))
 
                 if (rightFlag == True):
-                    # down-right
-                    if (node.state[0] < xUpLimit and node.state[1] <= yNewRightDownLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1] + 1], node, node.depth + 1))
-                       # print("Going down-right to " + str(children[len(children) - 1].state))
                     # up-right
                     if (node.state[0] < xUpLimit and node.state[1] >= yNewRightUpLimit):
                         children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
                         # print("Going up-right to " + str(children[len(children) - 1].state))
+                    # down-right
+                    if (node.state[0] < xUpLimit and node.state[1] <= yNewRightDownLimit):
+                        children.append(p.Node([node.state[0] + 1, node.state[1] + 1], node, node.depth + 1))
+                       # print("Going down-right to " + str(children[len(children) - 1].state))
 
                 else:
-                    # down-right
-                    if (node.state[0] < xUpLimit and node.state[1] < yDownLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
-                       # print("Going down-right to " + str(children[len(children) - 1].state))
                     # up-right
                     if (node.state[0] < xUpLimit and node.state[1] > yUpLimit):
                         children.append(p.Node([node.state[0] + 1, node.state[1] - 1], node, node.depth + 1))
-                      #  print("Going up-right to " + str(children[len(children) - 1].state))
+                        #  print("Going up-right to " + str(children[len(children) - 1].state))
+                    # down-right
+                    if (node.state[0] < xUpLimit and node.state[1] < yDownLimit):
+                        children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
+                        # print("Going down-right to " + str(children[len(children) - 1].state))
 
-                # down
+                 # down
                 if (node.state[1] < yDownLimit):
                     children.append(p.Node([node.state[0], node.state[1] + 1], node, node.depth + 1))
-                   # print("Going down to " + str(children[len(children) - 1].state))
+                    # print("Going down to " + str(children[len(children)-1].state))
 
                 if (leftFlag == True):
                     # down-left
-                    if (node.state[0] > xDownLimit and node.state[1] >= yNewLeftDownLimit):
+                    if (node.state[0] > xDownLimit and node.state[1] <= yNewLeftDownLimit):
                         children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
-                       # print("Going down-left to " + str(children[len(children) - 1].state))
+                    #  print("Going down-left to " + str(children[len(children) - 1].state))
                     # up-left
-                    if (node.state[0] > xDownLimit and node.state[1] <= yNewLeftUpLimit):
+                    if (node.state[0] > xDownLimit and node.state[1] - 1 >= yNewLeftUpLimit):
                         children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
-                      #  print("Going up-left to " + str(children[len(children) - 1].state))
+                    #  print("Going up-left to " + str(children[len(children) - 1].state))
                 else:
                     # down-left
                     if (node.state[0] > xDownLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1] + 1], node, node.depth + 1))
-                       # print("Going down-left to " + str(children[len(children) - 1].state))
-                    # up-left
-                    if (node.state[0] > xDownLimit and node.state[1] < yUpLimit):
                         children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
-                       # print("Going up-left to " + str(children[len(children) - 1].state))
+                    #  print("Going down-left to " + str(children[len(children) - 1].state))
+                    # up-left
+                    if (node.state[0] > xDownLimit and node.state[1] > yUpLimit):
+                        children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
+                        #  print("Going up-left to " + str(children[len(children) - 1].state))
+
+
         return children
 
     def goalTest(self, found_goal, goalie):
@@ -285,11 +285,10 @@ class Controller:
 
     def start(self):
         currentDepth = 1
-        noIteration = 0
         currentState = p.Node(self.initialState.state,None,0)
         while (self.currentRubbishRooms != [] or self.rubbishBin.weight != 0):
             # print("iterating")
-            while (currentDepth <= 15):
+            while (currentDepth <= 100):
                 print("trying limit: ", currentDepth)
                 self.explored = []
                 # self.frontier = [v.Node(self.currentState,None,0)]
@@ -298,12 +297,13 @@ class Controller:
                 # print("current depth: ", currentDepth)
 
                 solution, steps = self.DLS(currentDepth)
-                print(solution)
-                print("Number of steps: " + str(steps))
                 if (solution == None and steps == None):
                     self.restart()
+                    currentState = p.Node(self.initialState.state, None, 0)
                     currentDepth = 1
                     break
+                print(solution)
+                print("Number of steps: " + str(steps))
                 if (solution != None):
                     # self.currentState = self.frontier[0].state
                     # self.frontier[0].parent = None
