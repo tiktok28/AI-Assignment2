@@ -1,9 +1,9 @@
-import search as s
 import problem as p
 import math
 import random
 class Controller:
     legalDisposalRooms = [[0,5],[2,6],[4,7],[6,8],[8,9],[8,8],[8,7],[8,6],[8,5],[8,4],[7,3],[5,2],[3,1],[1,0]]
+    sizeOfLegalRooms = len(legalDisposalRooms)
     currentRubbishRooms = []
     currentDisposalRooms = []
     frontier = []
@@ -15,7 +15,6 @@ class Controller:
         self.numOfRubbish = numOfRubbish
         self.numOfDisposal = numOfDisposal
         self.initialState = initialState
-        numOfLegalLeft = len(self.legalDisposalRooms)
         if (case == 1):
             # rubbish room generation
             while len(self.currentRubbishRooms) != numOfRubbish:
@@ -41,18 +40,6 @@ class Controller:
 
             # disposal room generation
             while len(self.currentDisposalRooms) != numOfDisposal:
-                # yUpLimit, yDownLimit = 0, 5
-                # xCoor, yCoor = initialState[0], initialState[1]
-                #
-                # # ensure that no room is on starting position
-                # while [xCoor, yCoor] == initialState:
-                #     xCoor = random.randrange(0, 9)
-                #     limitShift = math.floor(xCoor / 2)
-                #     yUpLimit, yDownLimit = yUpLimit + limitShift, yDownLimit + limitShift
-                #     yCoor = random.randrange(yUpLimit + 1, yDownLimit)
-                #
-                #     disposalRoom = p.DisposalRoom([xCoor, yCoor])
-                # check if the coordinate has been used or not
                 legalDisposalRoom = p.DisposalRoom(self.legalDisposalRooms[random.randrange(0,len(self.legalDisposalRooms))])
                 if legalDisposalRoom.pos not in self.generatedCoords:
                     self.generatedCoords.append(legalDisposalRoom.pos)
@@ -240,11 +227,12 @@ class Controller:
         return solution, steps
 
     def start(self):
+        noOfIteration = 0
         currentDepth = 1
         currentState = p.Node(self.initialState,None,0)
         while (self.currentRubbishRooms != [] or self.rubbishBin.weight != 0):
             # print("iterating")
-            while (currentDepth <= 10):
+            while (currentDepth <= 100):
                 print("trying limit: ", currentDepth)
                 self.explored = []
                 # self.frontier = [v.Node(self.currentState,None,0)]
@@ -262,6 +250,9 @@ class Controller:
                     break
                 else:
                     currentDepth = currentDepth + 1
+                if(currentDepth>10):
+                    print("fail")
+                    exit()
             currentDepth = 1
         print("Final solution" + str(solution))
         print("Number of steps: " + str(steps))
