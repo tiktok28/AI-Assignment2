@@ -3,66 +3,82 @@ import problem as p
 import math
 import random
 class Controller:
-    orientation = 0
-    initialRubbishRooms = []
-    initialDisposalRooms = []
+    legalDisposalRooms = [[0,5],[2,6],[4,7],[6,8],[8,9],[8,8],[8,7],[8,6],[8,5],[8,4],[7,3],[5,2],[3,1],[1,0]]
     currentRubbishRooms = []
     currentDisposalRooms = []
-    currentState = p.Node()
-    initialState = p.Node()
     frontier = []
     explored = []
     depthLimit = 10
     rubbishBin = p.RubbishBin()
-    def __init__(self, numOfRubbish, numOfDisposal, initialState=[]):
-        # for i in range(numOfRubbish):
-        #     self.initialRubbishRooms.append(p.Rubbish(random.randrange(0, 4), random.randrange(1, 4), [random.randrange(0, 9), random.randrange(-4, 3)]))
-        #     print("Rubbish " + str(i + 1) + " at " + str(self.initialRubbishRooms[i].pos) + ", weight=" + str(self.initialRubbishRooms[i].weight) + ", volume=" + str(self.initialRubbishRooms[i].volume))
-        #
-        # for i in range(numOfDisposal):
-        #     self.initialDisposalRooms.append(p.DisposalRoom([random.randrange(0, 9, 2), random.randrange(-4, 4)]))
-        #     print("Disposal Room " + str(i + 1) + " at " + str(self.initialDisposalRooms[i].pos))
+    generatedCoords = []
+    def __init__(self, numOfRubbish=0, numOfDisposal=0, initialState=[], case=0):
+        self.numOfRubbish = numOfRubbish
+        self.numOfDisposal = numOfDisposal
+        self.initialState = initialState
+        numOfLegalLeft = len(self.legalDisposalRooms)
+        if (case == 1):
+            # rubbish room generation
+            while len(self.currentRubbishRooms) != numOfRubbish:
+                yUpLimit, yDownLimit = 0, 5
+                xCoor, yCoor = initialState[0], initialState[1]
 
-        trash1 = p.Rubbish(10, 1, [0, 5])
-        trash2 = p.Rubbish(30, 3, [1, 3])
-        trash3 = p.Rubbish(5, 1, [2, 3])
-        trash4 = p.Rubbish(5, 1, [3, 2])
-        trash5 = p.Rubbish(5, 3, [3, 5])
-        trash6 = p.Rubbish(10, 2, [4, 4])
-        trash7 = p.Rubbish(20, 1, [4, 6])
-        trash8 = p.Rubbish(10, 2, [6, 4])
-        trash9 = p.Rubbish(5, 2, [6, 7])
-        trash10 = p.Rubbish(30, 1, [7, 3])
-        trash11 = p.Rubbish(20, 2, [7, 6])
-        trash12 = p.Rubbish(10, 3, [8, 5])
-        #
-        # disposal1 = p.DisposalRoom([5, 0])
-        # disposal2 = p.DisposalRoom([1, 5])
-        # disposal3 = p.DisposalRoom([6, 2])
-        #
-        self.initialRubbishRooms = [trash1, trash2, trash3, trash4, trash5, trash6, trash7, trash8, trash9, trash10, trash11,trash12]
-        # self.currentDisposalRooms = [disposal1, disposal2, disposal3]
+                # ensure that no room is on starting position
+                while [xCoor, yCoor] == initialState:
+                    weight = random.randrange(0, 4)
+                    volume = random.randrange(1, 4)
+                    xCoor = random.randrange(0, 9)
+                    limitShift = math.floor(xCoor / 2)
+                    yUpLimit, yDownLimit = yUpLimit + limitShift, yDownLimit + limitShift
+                    yCoor = random.randrange(yUpLimit + 1, yDownLimit)
 
-        disposal1 = p.DisposalRoom([2,6])
-        disposal2 = p.DisposalRoom([5,2])
-        disposal3 = p.DisposalRoom([8,9])
-        self.initialDisposalRooms = [disposal1,disposal2,disposal3]
+                    rubbish = p.Rubbish(weight, volume, [xCoor, yCoor])
 
+                # check if the coordinate has been used or not
+                if rubbish.pos not in self.generatedCoords:
+                    self.generatedCoords.append(rubbish.pos)
+                    self.currentRubbishRooms.append(rubbish)
+                    print("Generated rubbish at " + rubbish.getStats())
 
-        self.currentRubbishRooms = self.initialRubbishRooms.copy()
-        self.currentDisposalRooms = self.initialDisposalRooms.copy()
-        self.initialState = p.Node(initialState, None, 0)
-        self.currentState = p.Node(initialState, None, 0)
+            # disposal room generation
+            while len(self.currentDisposalRooms) != numOfDisposal:
+                # yUpLimit, yDownLimit = 0, 5
+                # xCoor, yCoor = initialState[0], initialState[1]
+                #
+                # # ensure that no room is on starting position
+                # while [xCoor, yCoor] == initialState:
+                #     xCoor = random.randrange(0, 9)
+                #     limitShift = math.floor(xCoor / 2)
+                #     yUpLimit, yDownLimit = yUpLimit + limitShift, yDownLimit + limitShift
+                #     yCoor = random.randrange(yUpLimit + 1, yDownLimit)
+                #
+                #     disposalRoom = p.DisposalRoom([xCoor, yCoor])
+                # check if the coordinate has been used or not
+                legalDisposalRoom = p.DisposalRoom(self.legalDisposalRooms[random.randrange(0,len(self.legalDisposalRooms))])
+                if legalDisposalRoom.pos not in self.generatedCoords:
+                    self.generatedCoords.append(legalDisposalRoom.pos)
+                    self.currentDisposalRooms.append(legalDisposalRoom)
+                    print("Generated disposal room at " + str(legalDisposalRoom.pos))
 
-    def restart(self):
-        print("Restarted")
-        self.currentRubbishRooms = self.initialRubbishRooms
-        self.currentDisposalRooms = self.initialDisposalRooms
-        self.currentState = self.initialState
-        self.frontier = []
-        self.explored = []
-        self.rubbishBin.clearRubbish()
-        self.orientation = 1
+        else:
+            rubbish1 = p.Rubbish(10, 1, [0, 5])
+            rubbish2 = p.Rubbish(30, 3, [1, 3])
+            rubbish3 = p.Rubbish(5, 1, [2, 3])
+            rubbish4 = p.Rubbish(5, 1, [3, 2])
+            rubbish5 = p.Rubbish(5, 3, [3, 5])
+            rubbish6 = p.Rubbish(10, 2, [4, 4])
+            rubbish7 = p.Rubbish(20, 1, [4, 6])
+            rubbish8 = p.Rubbish(10, 2, [6, 4])
+            rubbish9 = p.Rubbish(5, 2, [6, 7])
+            rubbish10 = p.Rubbish(30, 1, [7, 3])
+            rubbish11 = p.Rubbish(20, 2, [7, 6])
+            rubbish12 = p.Rubbish(10, 3, [8, 5])
+      
+            self.currentRubbishRooms = [rubbish1, rubbish2, rubbish3, rubbish4, rubbish5, rubbish6, rubbish7, rubbish8, rubbish9, rubbish10, rubbish11,rubbish12]
+    
+            disposal1 = p.DisposalRoom([2,6])
+            disposal2 = p.DisposalRoom([5,2])
+            disposal3 = p.DisposalRoom([8,9])
+            self.currentDisposalRooms = [disposal1,disposal2,disposal3]
 
     def expandAndReturnChildren(self, node, depthLimit):
         children = []
@@ -71,13 +87,13 @@ class Controller:
         yUpLimit, yDownLimit = 0, 5
         xUpLimit, xDownLimit = 8, 0
 
-        yUpLimit -= limitShift
-        yDownLimit -= limitShift
+        yUpLimit += limitShift
+        yDownLimit += limitShift
 
         rightFlag = False
         leftFlag = False
 
-        if (node.state[0] > 0 and node.state[0] < 8):
+        if (node.state[0] >= 0 and node.state[0] <= 8):
             if (node.state[0] % 2 != 0):
                 yNewRightUpLimit = yUpLimit + 1
                 yNewRightDownLimit = yDownLimit + 1
@@ -91,131 +107,71 @@ class Controller:
                 # print("Y new down limit: ",yNewDownLimit)
 
         if (node.depth < depthLimit):
-            if(self.orientation == 0):
-                # down
-                if (node.state[1] < yDownLimit):
-                    children.append(p.Node([node.state[0], node.state[1] + 1], node, node.depth + 1))
+            # down
+            if (node.state[1] < yDownLimit):
+                children.append(p.Node([node.state[0], node.state[1] + 1], node, node.depth + 1))
                 # print("Going down to " + str(children[len(children)-1].state))
 
-                if (rightFlag == True):
-                    # down-right
-                    if (node.state[0] < xUpLimit and node.state[1] + 1 <= yNewRightDownLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1] + 1], node, node.depth + 1))
+            if (rightFlag == True):
+                # down-right
+                if (node.state[0] < xUpLimit and node.state[1] + 1 <= yNewRightDownLimit):
+                    children.append(p.Node([node.state[0] + 1, node.state[1] + 1], node, node.depth + 1))
                     # print("Going down-right to " + str(children[len(children) - 1].state))
-                    # up-right
-                    if (node.state[0] < xUpLimit and node.state[1] >= yNewRightUpLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
+                # up-right
+                if (node.state[0] < xUpLimit and node.state[1] >= yNewRightUpLimit):
+                    children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
                     # print("Going up-right to " + str(children[len(children) - 1].state))
 
-                else:
-                    # down-right
-                    if (node.state[0] < xUpLimit and node.state[1] < yDownLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1] + 1], node, node.depth + 1))
+            else:
+                # down-right
+                if (node.state[0] < xUpLimit and node.state[1] < yDownLimit):
+                    children.append(p.Node([node.state[0] + 1, node.state[1] + 1], node, node.depth + 1))
                     # print("Going down-right to " + str(children[len(children) - 1].state))
-                    # up-right
-                    if (node.state[0] < xUpLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
+                # up-right
+                if (node.state[0] < xUpLimit):
+                    children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
                     #  print("Going up-right to " + str(children[len(children) - 1].state))
 
-                # up
-                if (node.state[1] > yUpLimit):
-                    children.append(p.Node([node.state[0], node.state[1] - 1], node, node.depth + 1))
+            # up
+            if (node.state[1] > yUpLimit):
+                children.append(p.Node([node.state[0], node.state[1] - 1], node, node.depth + 1))
                 # print("Going up to " + str(children[len(children) - 1].state))
 
-                if (leftFlag == True):
-                    # up-left
-                    if (node.state[0] > xDownLimit and node.state[1] - 1 >= yNewLeftUpLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
+            if (leftFlag == True):
+                # up-left
+                if (node.state[0] > xDownLimit and node.state[1] - 1 >= yNewLeftUpLimit):
+                    children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
                     #  print("Going up-left to " + str(children[len(children) - 1].state))
-                    # down-left
-                    if (node.state[0] > xDownLimit and node.state[1] <= yNewLeftDownLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
+                # down-left
+                if (node.state[0] > xDownLimit and node.state[1] <= yNewLeftDownLimit):
+                    children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
                     #  print("Going down-left to " + str(children[len(children) - 1].state))
 
-                else:
-                    # up-left
-                    if (node.state[0] > xDownLimit and node.state[1] > yUpLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
-                    # down-left
-                    if (node.state[0] > xDownLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
-                    #  print("Going down-left to " + str(children[len(children) - 1].state))
-
-                    #  print("Going up-left to " + str(children[len(children) - 1].state))
             else:
-                # up
-                if (node.state[1] > yUpLimit):
-                    children.append(p.Node([node.state[0], node.state[1] - 1], node, node.depth + 1))
-                # print("Going up to " + str(children[len(children) - 1].state))
-
-                if (rightFlag == True):
-                    # up-right
-                    if (node.state[0] < xUpLimit and node.state[1] >= yNewRightUpLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
-                        # print("Going up-right to " + str(children[len(children) - 1].state))
-                    # down-right
-                    if (node.state[0] < xUpLimit and node.state[1] <= yNewRightDownLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1] + 1], node, node.depth + 1))
-                       # print("Going down-right to " + str(children[len(children) - 1].state))
-
-                else:
-                    # up-right
-                    if (node.state[0] < xUpLimit and node.state[1] > yUpLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1] - 1], node, node.depth + 1))
-                        #  print("Going up-right to " + str(children[len(children) - 1].state))
-                    # down-right
-                    if (node.state[0] < xUpLimit and node.state[1] < yDownLimit):
-                        children.append(p.Node([node.state[0] + 1, node.state[1]], node, node.depth + 1))
-                        # print("Going down-right to " + str(children[len(children) - 1].state))
-
-                 # down
-                if (node.state[1] < yDownLimit):
-                    children.append(p.Node([node.state[0], node.state[1] + 1], node, node.depth + 1))
-                    # print("Going down to " + str(children[len(children)-1].state))
-
-                if (leftFlag == True):
-                    # down-left
-                    if (node.state[0] > xDownLimit and node.state[1] <= yNewLeftDownLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
-                    #  print("Going down-left to " + str(children[len(children) - 1].state))
-                    # up-left
-                    if (node.state[0] > xDownLimit and node.state[1] - 1 >= yNewLeftUpLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
+                # up-left
+                if (node.state[0] > xDownLimit and node.state[1] > yUpLimit):
+                    children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
                     #  print("Going up-left to " + str(children[len(children) - 1].state))
-                else:
-                    # down-left
-                    if (node.state[0] > xDownLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
+                # down-left
+                if (node.state[0] > xDownLimit):
+                    children.append(p.Node([node.state[0] - 1, node.state[1]], node, node.depth + 1))
                     #  print("Going down-left to " + str(children[len(children) - 1].state))
-                    # up-left
-                    if (node.state[0] > xDownLimit and node.state[1] > yUpLimit):
-                        children.append(p.Node([node.state[0] - 1, node.state[1] - 1], node, node.depth + 1))
-                        #  print("Going up-left to " + str(children[len(children) - 1].state))
-
-
         return children
 
     def goalTest(self, found_goal, goalie):
             for rubbish in self.currentRubbishRooms:
-                if self.frontier[0].state == rubbish.pos:
-                    limitTest = self.rubbishBin.withinLimit()
-                    print("Found rubbish at " + str(rubbish.pos))
-                    print("Rubbish Bin Current Stats: " + str(self.rubbishBin.weight) + "kg, " + str(self.rubbishBin.volume) + "m3")
-                    self.rubbishBin.takeRubbish(rubbish)
-                    binTest = self.rubbishBin.failTest()
-                    if binTest == True and self.orientation == 1:
-                        print("No possible solution found")
-                        exit()
-                    if binTest == False:
+                if (self.frontier[0].state == rubbish.pos):
+                    if (self.rubbishBin.failTest(rubbish.weight, rubbish.volume)):
+                        print("found")
                         found_goal = True
                         self.currentRubbishRooms.remove(rubbish)
                         self.frontier[0].state.append("take")
                         goalie = self.frontier[0]
                         return found_goal, goalie
                     else:
-                        print("Left-to-Right iteration failed")
-                        print("Executing Right-to-Left iteration...")
-                        return None, None
+                        self.explored.append(self.frontier[0])
+                        self.frontier[0] = self.frontier[0].parent
+                        return found_goal, goalie
 
             for disposalRoom in self.currentDisposalRooms:
                 if (self.frontier[0].state == disposalRoom.pos):
@@ -285,10 +241,10 @@ class Controller:
 
     def start(self):
         currentDepth = 1
-        currentState = p.Node(self.initialState.state,None,0)
+        currentState = p.Node(self.initialState,None,0)
         while (self.currentRubbishRooms != [] or self.rubbishBin.weight != 0):
             # print("iterating")
-            while (currentDepth <= 100):
+            while (currentDepth <= 10):
                 print("trying limit: ", currentDepth)
                 self.explored = []
                 # self.frontier = [v.Node(self.currentState,None,0)]
@@ -297,13 +253,6 @@ class Controller:
                 # print("current depth: ", currentDepth)
 
                 solution, steps = self.DLS(currentDepth)
-                if (solution == None and steps == None):
-                    self.restart()
-                    currentState = p.Node(self.initialState.state, None, 0)
-                    currentDepth = 1
-                    break
-                print(solution)
-                print("Number of steps: " + str(steps))
                 if (solution != None):
                     # self.currentState = self.frontier[0].state
                     # self.frontier[0].parent = None
@@ -314,5 +263,5 @@ class Controller:
                 else:
                     currentDepth = currentDepth + 1
             currentDepth = 1
-        print(solution)
+        print("Final solution" + str(solution))
         print("Number of steps: " + str(steps))

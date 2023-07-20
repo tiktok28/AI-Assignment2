@@ -1,12 +1,20 @@
 import controller as c
 
-numOfRubbish = 3 #int(input("Number of rooms with rubbish?\n"))
-numOfDisposalRoom = 3 #int(input("Number of disposal rooms?\n"))
 initialState = [0,0]
+try:
+    case = int(input("Default case or generated? (0 or 1)"))
+    if(case != 0 and case != 1):
+        print("Non-acceptable value sent, executing default case...")
+        case = 0
+except:
+    print("Non-acceptable value sent, executing default case...")
+    case = 0
 
-controller = c.Controller(numOfRubbish, numOfDisposalRoom, initialState)
-# for room in controller.initialDisposalRooms:
-#     print(room.pos)
-# for room in controller.initialRubbishRooms:
-#     print(room.pos)
+if case == 1:
+    numOfRubbish = int(input("Number of rooms with rubbish?\n"))
+    numOfDisposalRoom = int(input("Number of disposal rooms?\n"))
+    controller = c.Controller(numOfRubbish, numOfDisposalRoom, initialState, case)
+else:
+    controller = c.Controller(0, 0, initialState, case)
+
 controller.start()
