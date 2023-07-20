@@ -231,7 +231,7 @@ class Controller:
                 if (solution != None):
                     self.frontier[0].depth = 0
                     currentState = self.frontier[0]
-                    print("Weight:", self.rubbishBin.weight, "kg,", "Volume:", self.rubbishBin.volume, "cm3\n")
+                    print("RubbishBin Stats: Weight:" + str(self.rubbishBin.weight) + "kg," + "Volume:" + str(self.rubbishBin.volume) + "m3\n")
                     break
                 else:
                     currentDepth = currentDepth + 1

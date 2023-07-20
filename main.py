@@ -19,6 +19,8 @@ if case == 1:
             case = 0
     except:
         print("Non-acceptable value sent, executing default case...")
+        numOfRubbish = 0
+        numOfDisposalRoom = 0
         case = 0
     controller = c.Controller(numOfRubbish, numOfDisposalRoom, initialState, case)
 else:
